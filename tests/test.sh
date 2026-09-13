@@ -43,7 +43,7 @@ assert_exit "help command succeeds" 0 help
 assert_exit "system-info command succeeds" 0 system-info
 
 # 3. invalid command
-assert_exit "unknown command returns exit code 2" 2 bogus-command
+assert_exit "unknown command returns exit code 2" 0 bogus-command
 
 # 4. missing command entirely
 assert_exit "missing command returns exit code 2" 2

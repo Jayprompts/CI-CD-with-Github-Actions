@@ -69,16 +69,19 @@ three jobs enforced in order via `needs:`:
 
 ### CI failure demonstration
 
-<!-- Filled in after the deliberate-break demo -->
-To demonstrate that the pipeline actually catches problems, a branch was
-created with an intentional failure, pushed to show CI go red, then fixed
-and pushed again to confirm the pipeline passes. See: `<PR/commit link>`.
+To confirm the pipeline actually catches problems rather than just running
+green by default, a branch (`demo/ci-failure`) was created with a
+deliberately incorrect test assertion in `tests/test.sh` (expecting exit
+code `0` instead of the correct `2` for an unknown command).
 
-## Assumptions
+- **Failed run:** the `validate` job passed, `test` failed as expected, and
+  `docker` did not run (blocked by its `needs: test` dependency):
+  https://github.com/Jayprompts/CI-CD-with-Github-Actions/actions/runs/34729673166/job/103650032767
 
-- The grading/CI environment is Linux (`ubuntu-latest` GitHub-hosted runners).
-- Docker is available in CI by default on GitHub-hosted `ubuntu-latest` runners,
-  so no additional Docker setup step was needed in the workflow.
-- `bash` is required (scripts are not POSIX `sh`-only).
-- No secrets or environment-specific configuration are required to build,
-  test, or run this project.
+- **Fixed run:** after reverting the assertion to the correct expected exit
+  code (`2`) and pushing again, all three jobs passed:
+  https://github.com/Jayprompts/CI-CD-with-Github-Actions/actions/runs/34729893837/job/103650631300
+
+This confirms the `needs:` chain genuinely enforces order — a failure in an
+earlier stage prevents later stages from running, rather than every job
+running independently regardless of outcome.
